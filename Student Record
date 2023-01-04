@@ -1,0 +1,54 @@
+import { useState, useEffect } from 'react';
+
+function StudentAttendance() {
+  const [students, setStudents] = useState([]);
+  const [currentTime, setCurrentTime] = useState(null);
+
+  useEffect(() => {
+    // Fetch the current time when the component is first rendered
+    const fetchTime = async () => {
+      const response = await fetch('http://my-time-api.com');
+      const time = await response.json();
+      setCurrentTime(time);
+    }
+    fetchTime();
+  }, []); // The empty array ensures that this effect only runs once
+
+  const addStudent = (rollNumber, name) => {
+    // Add the student to the list of students and record the current time as the check-in time
+    const newStudent = { rollNumber, name, checkInTime: currentTime };
+    setStudents([...students, newStudent]);
+  }
+
+  const removeStudent = (rollNumber) => {
+    // Remove the student from the list of students and record the current time as the check-out time
+    const updatedStudents = students.map(student => {
+      if (student.rollNumber === rollNumber) {
+        return { ...student, checkOutTime: currentTime };
+      }
+      return student;
+    });
+    setStudents(updatedStudents);
+  }
+
+  return (
+    <div>
+      <form>
+        <label>
+          Roll Number:
+          <input type="text" name="rollNumber" />
+        </label>
+        <label>
+          Name:
+          <input type="text" name="name" />
+        </label>
+        <button type="button" onClick={() => addStudent(rollNumber, name)}>Check In</button>
+        <button type="button" onClick={() => removeStudent(rollNumber)}>Check Out</button>
+      </form>
+      <table>
+        <thead>
+          <tr>
+            <th>Roll Number</th>
+            <th>Name</th>
+            <th>Check-In Time</th>
+            <th>Check-
